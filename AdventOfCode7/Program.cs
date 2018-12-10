@@ -17,7 +17,7 @@ namespace AdventOfCode7
             // Part I
             string path = Path.Combine(@"..\..\Data\input.txt");
             string[] allLines = File.ReadAllLines(path);
-            int partOneAnswer = 0;
+            string partOneAnswer = "";
             string delimited = @"(\w+)";
             List<Node> listOfNodes = new List<Node>();
             LinkedList<char> linkedListNodes = new LinkedList<char>();
@@ -97,9 +97,6 @@ namespace AdventOfCode7
             {
                 List<Node> nodesThatAreReady = new List<Node>();
 
-                // Let's see if any are all "ready" and just waiting for their turn..
-                
-
                 foreach (var n in listOfNodes)
                 {
                     if (!n.isComplete && (n.DependsOn.Count == 0 || n.DependsOn.All(x => x.isReady)))
@@ -124,32 +121,10 @@ namespace AdventOfCode7
                             sn.isReady = true;
                         }
                     }
-                }
-
-                //Process all nodes that are ready in order
-                //foreach(var n in nodesThatAreReady.OrderBy(x => x.Name))
-                //{
-                //    finalString += n.Name;
-                //    var node = nodesThatAreReady.FirstOrDefault(x => x.Name == n.Name);
-                //    if (node != null)
-                //        node.isComplete = true;
-                //}
-
-                //foreach (var n in listOfNodes.Where(x => x.isReady == false))
-                //{
-                //    if (n.DependsOn.All(x => x.isReady))
-                //    {
-                //        n.isReady = true;
-                //    }
-                //}
-                Console.WriteLine("Final string: " + finalString);
+                }                
             } while (listOfNodes.Any(x => !x.isComplete));
 
-
-
-            //Display
-            //DisplayTree(myTree, ending);
-            Console.WriteLine(finalString);
+            partOneAnswer = finalString;
 
             // Part II
             int partTwoAnswer = 0;
