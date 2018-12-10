@@ -21,8 +21,13 @@ namespace AdventOfCode7
             string delimited = @"(\w+)";
             List<Node> listOfNodes = new List<Node>();
             LinkedList<char> linkedListNodes = new LinkedList<char>();
+            Node newNode;
 
-            //Build List of points                        
+            // Build first node;  We know this is "D" by observing the data
+            newNode = new Node('C');
+            listOfNodes.Add(newNode);
+
+            //Build List of points
             foreach (var line in allLines)
             {
                 var matches = Regex.Matches(line, delimited);
@@ -33,62 +38,100 @@ namespace AdventOfCode7
                 }
                 else
                 {
-                    listOfNodes.Add(new Node(matches[1].Value[0], matches[7].Value[0]));
-                }
-            }
+                    var nodeName = matches[7].Value[0];
+                    var dependsOn = matches[1].Value[0];
 
-            //Write out list
-            Console.WriteLine("Current list: ");
-            foreach (var n in listOfNodes)
-            {
-                Console.WriteLine("Name: " + n.Name + ", depends on: " + n.DependsOn);
-            }
-            Console.WriteLine();
-            Console.WriteLine();
-
-            //Find beginning
-            var beginning = listOfNodes.First(x => listOfNodes.Any(y => y.DependsOn != x.Name));
-            Console.WriteLine("Beginning: " + beginning.Name);
-
-            //Find ending
-            char ending = ' ';
-            char findMe = ' ';
-            for (int i = 0; i < listOfNodes.Count; i++)
-            {
-                findMe = listOfNodes[i].DependsOn;
-                if (listOfNodes.All(x => x.Name != findMe))
-                {
-                    ending = findMe;
-                }
-            }            
-            Console.WriteLine("ending: " + ending);
-
-            // Now let's build the list
-            //linkedListNodes.AddFirst(beginning);
-            //linkedListNodes.AddLast(ending);
-
-            TreeNode myTree = new TreeNode(beginning.Name);
-          
-            foreach(var c in listOfNodes)
-{
-                if (c.Name == myTree.Name)
+                    var nodeFound = listOfNodes.FirstOrDefault(x => x.Name == nodeName);
+                    if (nodeFound != null)
                     {
-                    var newNode = new TreeNode(c.DependsOn);
-                    myTree.ChildNodes.Add(newNode);
-}
-                else
+                        var dependsOnNode = listOfNodes.FirstOrDefault(x => x.Name == dependsOn);
+
+                        if (dependsOnNode != null)
+                        {
+                            nodeFound.DependsOn.Add(dependsOnNode);
+                        }
+                        else
+                        {
+                            nodeFound.DependsOn.Add(new Node(dependsOn));
+                        }
+                    }
+                    else
                     {
-                    var currentNode = myTree;
-                    var childNode = recursiveNodeFind(c, myTree);
-                    if (childNode != null)
-                    {
-                        childNode.ChildNodes.Add(new TreeNode(c.Name));
+                        newNode = new Node(nodeName);
+
+                        var dependsOnNode = listOfNodes.FirstOrDefault(x => x.Name == dependsOn);
+
+                        if (dependsOnNode != null)
+                        {
+                            newNode.DependsOn.Add(dependsOnNode);
+                        }
+                        else
+                        {
+                            newNode.DependsOn.Add(new Node(dependsOn));
+                        }
+                        listOfNodes.Add(newNode);
                     }
                 }
             }
 
+            string finalString = "";
+            do
+            {
+                List<Node> nodesThatAreReady = new List<Node>();
+
+                // Let's see if any are all "ready" and just waiting for their turn..
+                
+
+                foreach (var n in listOfNodes)
+                {
+                    if (!n.isComplete && (n.DependsOn.Count == 0 || n.DependsOn.All(x => x.isReady)))
+                    {
+                        nodesThatAreReady.Add(n);
+                    }
+
+                }
+
+                // Process one node at a time, in order
+                var nextNodeToProcess = nodesThatAreReady.OrderBy(y => y.Name).FirstOrDefault();
+
+                if (nextNodeToProcess != null)
+                {
+                    finalString += nextNodeToProcess.Name;
+                    nextNodeToProcess.isComplete = true;
+                }
+
+                //Process all nodes that are ready in order
+                //foreach(var n in nodesThatAreReady.OrderBy(x => x.Name))
+                //{
+                //    finalString += n.Name;
+                //    var node = nodesThatAreReady.FirstOrDefault(x => x.Name == n.Name);
+                //    if (node != null)
+                //        node.isComplete = true;
+                //}
+
+                foreach(var n in listOfNodes.Where(x => !x.isComplete))
+                {
+                    foreach(var sn in n.DependsOn.Where(x => x.Name == nextNodeToProcess.Name))
+                    {
+                        sn.isReady = true;
+                    }
+                }
+
+                //foreach (var n in listOfNodes.Where(x => x.isReady == false))
+                //{
+                //    if (n.DependsOn.All(x => x.isReady))
+                //    {
+                //        n.isReady = true;
+                //    }
+                //}
+                Console.WriteLine("Final string: " + finalString);
+            } while (listOfNodes.Any(x => !x.isComplete));
+
+
+
             //Display
-            DisplayTree(myTree);
+            //DisplayTree(myTree, ending);
+            Console.WriteLine(finalString);
 
             // Part II
             int partTwoAnswer = 0;
@@ -104,43 +147,6 @@ namespace AdventOfCode7
         }
 
 
-        private static TreeNode recursiveNodeFind(Node inNode, TreeNode tree)
-        {
-             if (tree.Name == inNode.Name)
-                return tree;
-             else 
-             {
-                var foundNode = tree.ChildNodes.FirstOrDefault(x => x.Name == inNode.Name);
-                bool isFoundNode = false;
-                foreach(var cn in tree.ChildNodes)
-                {
-                    if (isFoundNode)
-                        break;
-                    var childNodeFind = recursiveNodeFind(inNode, cn);
-                    if (childNodeFind != null)
-                    {
-                        isFoundNode = true;
-                        return childNodeFind;
-                        break;
-                    }
-                    else
-                    {
-                        return null;
-                    }
-                }
-                if (!isFoundNode)
-                    return tree;
-             }
-            return null;
-        }
 
-        private static void DisplayTree(TreeNode myTree)
-        {
-            Console.Write(myTree.Name);
-            foreach(var node in myTree.ChildNodes.OrderBy(x => x.Name))
-            {
-                DisplayTree(node);
-            }
-        }
     }
 }

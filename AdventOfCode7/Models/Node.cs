@@ -10,12 +10,20 @@ namespace AdventOfCode7.Models
     {
         public char Name { get; set; }
 
-        public char DependsOn { get; set; }
+        public List<Node> DependsOn { get; set; } = new List<Node>();
 
-        public Node(char name, char dependsOn)
+        public bool isReady { get; set; }
+
+        public bool isWaiting { get; set; }
+
+        public bool isComplete { get; set; }
+
+        public Node(char name)
         {
             Name = name;
-            DependsOn = dependsOn;
+            isReady = false;
+            isComplete = false;
+            isWaiting = false;
         }
     }
 }
