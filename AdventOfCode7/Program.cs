@@ -21,11 +21,29 @@ namespace AdventOfCode7
             string delimited = @"(\w+)";
             List<Node> listOfNodes = new List<Node>();
             LinkedList<char> linkedListNodes = new LinkedList<char>();
+            List<char> haveFirstChar = new List<char>();
+            List<char> haveSecondChar = new List<char>();
             Node newNode;
 
-            // Build first node;  We know this is "D" by observing the data
-            newNode = new Node('D');
-            listOfNodes.Add(newNode);
+            // Find beginning and end nodes
+            foreach (var line in allLines)
+            {
+                var matches = Regex.Matches(line, delimited);
+
+                haveSecondChar.Add(matches[7].Value[0]);
+                haveFirstChar.Add(matches[1].Value[0]);
+            }
+
+            var notInFirst = haveFirstChar.Where(x => !haveSecondChar.Contains(x)).GroupBy(y => y);
+            var notInSecond = haveSecondChar.Where(x => !haveFirstChar.Contains(x)).GroupBy(y => y);
+
+            //Build first nodes
+            foreach (var node in notInFirst)
+            {
+                newNode = new Node(node.Key);
+                listOfNodes.Add(newNode);
+            }
+            
 
             //Build List of points
             foreach (var line in allLines)
@@ -98,6 +116,14 @@ namespace AdventOfCode7
                 {
                     finalString += nextNodeToProcess.Name;
                     nextNodeToProcess.isComplete = true;
+
+                    foreach (var n in listOfNodes.Where(x => !x.isComplete))
+                    {
+                        foreach (var sn in n.DependsOn.Where(x => x.Name == nextNodeToProcess.Name))
+                        {
+                            sn.isReady = true;
+                        }
+                    }
                 }
 
                 //Process all nodes that are ready in order
@@ -108,14 +134,6 @@ namespace AdventOfCode7
                 //    if (node != null)
                 //        node.isComplete = true;
                 //}
-
-                foreach(var n in listOfNodes.Where(x => !x.isComplete))
-                {
-                    foreach(var sn in n.DependsOn.Where(x => x.Name == nextNodeToProcess.Name))
-                    {
-                        sn.isReady = true;
-                    }
-                }
 
                 //foreach (var n in listOfNodes.Where(x => x.isReady == false))
                 //{
