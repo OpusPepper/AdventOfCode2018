@@ -24,7 +24,7 @@ namespace AdventOfCode7
             Node newNode;
 
             // Build first node;  We know this is "D" by observing the data
-            newNode = new Node('C');
+            newNode = new Node('D');
             listOfNodes.Add(newNode);
 
             //Build List of points
