@@ -13,17 +13,18 @@ namespace AdventOfCode7.Models
         public List<Node> DependsOn { get; set; } = new List<Node>();
 
         public bool isReady { get; set; }
-
-        public bool isWaiting { get; set; }
+      
 
         public bool isComplete { get; set; }
+        
+        public int SecondsLeftToProcess { get; set; }
 
         public Node(char name)
         {
             Name = name;
             isReady = false;
             isComplete = false;
-            isWaiting = false;
+            SecondsLeftToProcess = 0;
         }
     }
 }

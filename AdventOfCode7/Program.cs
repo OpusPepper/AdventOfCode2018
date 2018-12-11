@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.IO;
 using System.Linq;
 using System.Runtime.CompilerServices;
@@ -128,6 +129,109 @@ namespace AdventOfCode7
 
             // Part II
             int partTwoAnswer = 0;
+
+            // Can we use a datatable to hold the data?
+            int numberOfWorkers = 2;
+            int numberOfAdditionalSecondsPerTask = 0;
+            foreach(var node in listOfNodes)
+            {
+                node.isComplete = false;
+                node.isReady = false;
+                node.SecondsLeftToProcess = (((int)node.Name) - 64) + numberOfAdditionalSecondsPerTask;
+
+                foreach (var subnode in node.DependsOn)
+                {
+                    subnode.isComplete = false;
+                    subnode.isReady = false;
+                    subnode.SecondsLeftToProcess = (((int)node.Name) - 64) + numberOfAdditionalSecondsPerTask;
+                }
+            }
+
+
+            int counter = 0;
+            DataRow newDataRow;
+            DataTable mytable = new DataTable("TimeTable");
+            mytable.Columns.Add(new DataColumn("Seconds", typeof(int)));
+            for (int i = 0; i < numberOfWorkers; i++)
+            {
+                mytable.Columns.Add(new DataColumn("Worker " + i, typeof(char)));
+            }
+            mytable.Columns.Add(new DataColumn("Done"));
+
+
+
+            finalString = "";
+            do
+            {
+                newDataRow = mytable.NewRow();
+                newDataRow["Seconds"] = counter;
+
+                List<Node> nodesThatAreReady = new List<Node>();
+
+                foreach (var n in listOfNodes)
+                {
+                    if (!n.isComplete && (n.DependsOn.Count == 0 || n.DependsOn.All(x => x.isReady)))
+                    {
+                        if (n.SecondsLeftToProcess > 0)
+                            nodesThatAreReady.Add(n);
+                        else
+                        {
+                            
+                            finalString += n.Name;
+                            n.isComplete = true;
+                            newDataRow["Done"] = finalString;
+
+                            foreach (var n2 in listOfNodes.Where(x => !x.isComplete))
+                            {
+                                foreach (var sn in n2.DependsOn.Where(x => x.Name == n.Name))
+                                {
+                                    sn.isReady = true;
+                                }
+                            }
+
+                        }
+                    }
+
+                }
+
+                // Process one node at a time, in order
+                var nextNodeToProcess = nodesThatAreReady.Where(x => x.SecondsLeftToProcess > 0).OrderBy(y => y.Name).ToList();
+                var numberToAssignOut = 0;
+                if (nextNodeToProcess.Any())
+                {
+                    if (nextNodeToProcess.Count() > numberOfWorkers)
+                    {
+                        numberToAssignOut = numberOfWorkers;
+                    }
+                    else
+                        numberToAssignOut = nextNodeToProcess.Count();
+
+
+                    for (int i = 0; i < numberToAssignOut; i++)
+                    {
+                        newDataRow["Worker " + i] = nextNodeToProcess[i].Name;
+                        nextNodeToProcess[i].SecondsLeftToProcess -= 1;
+                    }
+
+                }
+
+                mytable.Rows.Add(newDataRow);
+
+                foreach(DataRow r in mytable.Rows)
+                {
+
+                    Console.Write(r["Seconds"] + ", ");
+
+                    for(int i = 0; i < numberOfWorkers; i++)
+                    {
+                        Console.Write(r["Worker " + i] + ", ");
+                    }
+                    Console.WriteLine(r["Done"]);
+                }
+                Console.WriteLine("Press any key to end...");
+                Console.ReadLine();
+                counter++;
+            } while (listOfNodes.Any(x => !x.isComplete));
 
             // Results
             Console.WriteLine("******************");
