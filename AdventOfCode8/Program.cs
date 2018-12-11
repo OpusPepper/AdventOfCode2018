@@ -39,11 +39,14 @@ namespace AdventOfCode8
 
             partOneAnswer = getTotalOfMetaData(newNode);
 
+            // Part II
+            int partTwoAnswer = getRootNodeValue(newNode);
+
             // Results
             Console.WriteLine("******************");
             Console.WriteLine("AdventOfCode Day 8");
             Console.WriteLine("Part I: " + partOneAnswer);
-            Console.WriteLine("Part II: " + "");
+            Console.WriteLine("Part II: " + partTwoAnswer);
             Console.WriteLine("******************");
             Console.WriteLine("Press any key to end...");
             Console.ReadLine();
@@ -96,6 +99,31 @@ namespace AdventOfCode8
                 {
                     returnValue += getTotalOfMetaData(cn);
                 }                
+            }
+
+            return returnValue;
+        }
+
+        private static int getRootNodeValue(Node inNode)
+        {
+            int returnValue = 0;
+
+            if (inNode.ChildNodes.Any())
+            {
+                foreach (var i in inNode.MetaData)
+                {
+                    if (inNode.ChildNodes.Count() > (i - 1))
+                    {
+                        returnValue += getRootNodeValue(inNode.ChildNodes[i - 1]);
+                    }
+                }
+            }
+            else
+            {
+                foreach (var i in inNode.MetaData)
+                {
+                    returnValue += i;
+                }
             }
 
             return returnValue;
