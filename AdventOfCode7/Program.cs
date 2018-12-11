@@ -127,12 +127,13 @@ namespace AdventOfCode7
 
             partOneAnswer = finalString;
 
+            /////////////////////////////////////////
             // Part II
             int partTwoAnswer = 0;
 
             // Can we use a datatable to hold the data?
-            int numberOfWorkers = 2;
-            int numberOfAdditionalSecondsPerTask = 0;
+            int numberOfWorkers = 5;
+            int numberOfAdditionalSecondsPerTask = 60;
             foreach(var node in listOfNodes)
             {
                 node.isComplete = false;
@@ -143,7 +144,7 @@ namespace AdventOfCode7
                 {
                     subnode.isComplete = false;
                     subnode.isReady = false;
-                    subnode.SecondsLeftToProcess = (((int)node.Name) - 64) + numberOfAdditionalSecondsPerTask;
+                    subnode.SecondsLeftToProcess = (((int)subnode.Name) - 64) + numberOfAdditionalSecondsPerTask;
                 }
             }
 
@@ -165,27 +166,34 @@ namespace AdventOfCode7
             {
                 newDataRow = mytable.NewRow();
                 newDataRow["Seconds"] = counter;
+                for (int i = 0; i < numberOfWorkers; i++)
+                {
+                    newDataRow["Worker " + i] = '.';
+                }
 
                 List<Node> nodesThatAreReady = new List<Node>();
 
                 foreach (var n in listOfNodes)
                 {
-                    if (!n.isComplete && (n.DependsOn.Count == 0 || n.DependsOn.All(x => x.isReady)))
+                    if (!n.isComplete && (n.DependsOn.Count == 0 || n.DependsOn.All(x => x.SecondsLeftToProcess == 0)))
                     {
                         if (n.SecondsLeftToProcess > 0)
-                            nodesThatAreReady.Add(n);
+                        {
+                            nodesThatAreReady.Add(n);                            
+                        }
                         else
                         {
                             
                             finalString += n.Name;
                             n.isComplete = true;
-                            newDataRow["Done"] = finalString;
+                            
 
                             foreach (var n2 in listOfNodes.Where(x => !x.isComplete))
                             {
                                 foreach (var sn in n2.DependsOn.Where(x => x.Name == n.Name))
                                 {
                                     sn.isReady = true;
+                                    sn.SecondsLeftToProcess = 0;
                                 }
                             }
 
@@ -194,44 +202,83 @@ namespace AdventOfCode7
 
                 }
 
+                newDataRow["Done"] = finalString;
+
                 // Process one node at a time, in order
                 var nextNodeToProcess = nodesThatAreReady.Where(x => x.SecondsLeftToProcess > 0).OrderBy(y => y.Name).ToList();
-                var numberToAssignOut = 0;
-                if (nextNodeToProcess.Any())
-                {
-                    if (nextNodeToProcess.Count() > numberOfWorkers)
+                var numNodesToProcess = nextNodeToProcess.Count;
+                    for (int i = 0; i < numNodesToProcess; i++)
                     {
-                        numberToAssignOut = numberOfWorkers;
+                        bool assignedToWorker = false;
+                        if (mytable.Rows.Count > 0)
+                        {
+                            var lastRow = mytable.Rows[mytable.Rows.Count - 1];
+                            
+                            //Now go through the workers and see if someone was working on this node before
+                            for (int j = 0; j < numberOfWorkers; j++)
+                            {
+                                if (Convert.ToChar(newDataRow["Worker " + j]) == '.')
+                                {
+                                    char lastNodeByWorker = (char) lastRow["Worker " + j];
+
+                                    for (int k = 0; k < nextNodeToProcess.Count(); k++)
+                                    {
+                                        if (lastNodeByWorker == nextNodeToProcess[k].Name)
+                                        {
+                                            newDataRow["Worker " + j] = nextNodeToProcess[k].Name;
+                                            nextNodeToProcess[k].SecondsLeftToProcess -= 1;
+                                            nextNodeToProcess.Remove(nextNodeToProcess[k]);
+                                            assignedToWorker = true;
+                                        }
+                                    }
+                                }
+                            }
+                        }
+
+                        var numberOfWorkersAvailable = 0;
+                        for (int j = 0; j < numberOfWorkers; j++)
+                        {
+                            if (Convert.ToChar(newDataRow["Worker " + j]) == '.')
+                            {
+                                numberOfWorkersAvailable++;
+                            }
+                        }
+
+                        if ((!assignedToWorker) && (nextNodeToProcess.Count > 0) && (numberOfWorkersAvailable > 0))
+                        {
+                            for (int j = 0; j < numberOfWorkers; j++)
+                            {
+                                if (Convert.ToChar(newDataRow["Worker " + j]) == '.')
+                                {
+                                    newDataRow["Worker " + j] = nextNodeToProcess.First().Name;
+                                    nextNodeToProcess.First().SecondsLeftToProcess -= 1;
+                                    nextNodeToProcess.Remove(nextNodeToProcess.First());
+                                    assignedToWorker = true;
+                                    break;
+                                }
+                            }                            
+                        }                             
                     }
-                    else
-                        numberToAssignOut = nextNodeToProcess.Count();
-
-
-                    for (int i = 0; i < numberToAssignOut; i++)
-                    {
-                        newDataRow["Worker " + i] = nextNodeToProcess[i].Name;
-                        nextNodeToProcess[i].SecondsLeftToProcess -= 1;
-                    }
-
-                }
 
                 mytable.Rows.Add(newDataRow);
 
-                foreach(DataRow r in mytable.Rows)
-                {
-
-                    Console.Write(r["Seconds"] + ", ");
-
-                    for(int i = 0; i < numberOfWorkers; i++)
-                    {
-                        Console.Write(r["Worker " + i] + ", ");
-                    }
-                    Console.WriteLine(r["Done"]);
-                }
-                Console.WriteLine("Press any key to end...");
-                Console.ReadLine();
+                
                 counter++;
             } while (listOfNodes.Any(x => !x.isComplete));
+
+            foreach (DataRow r in mytable.Rows)
+            {
+
+                Console.Write(r["Seconds"] + ", ");
+
+                for (int i = 0; i < numberOfWorkers; i++)
+                {
+                    Console.Write(r["Worker " + i] + ", ");
+                }
+                Console.WriteLine(r["Done"]);
+            }
+
+            partTwoAnswer = mytable.Rows.Count - 1;  // last row just shows it's all done
 
             // Results
             Console.WriteLine("******************");
