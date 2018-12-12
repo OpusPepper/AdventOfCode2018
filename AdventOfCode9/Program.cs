@@ -5,15 +5,19 @@ using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using log4net;
+using log4net.Config;
 
 namespace AdventOfCode9
 {
     class Program
     {
-
+        private static readonly ILog Log = LogManager.GetLogger(typeof(Program));
 
         static void Main(string[] args)
         {
+            XmlConfigurator.Configure();
+
             // Part I
             string path = Path.Combine(@"..\..\Data\input.txt");
             string[] allLines = File.ReadAllLines(path);
@@ -43,10 +47,11 @@ namespace AdventOfCode9
                 scores.Add(0);
             }
 
-            Console.WriteLine("Game Begins");
+            //Console.WriteLine("Game Begins");
+            Log.InfoFormat($"Game Begins");
             marbleOrder.Add(marble);
             currentMarble = marble;
-            Console.WriteLine("[-] " + GetMarbleOrderString(marbleOrder, currentMarble));
+            //Console.WriteLine("[-] " + GetMarbleOrderString(marbleOrder, currentMarble));
             marble++;
 
             bool gameover = false;
@@ -94,7 +99,10 @@ namespace AdventOfCode9
                     gameover = true;
 
                 if (marble % 10000 == 0)
-                    Console.WriteLine(DateTime.Now.ToShortTimeString() + ": On marble # " + marble);
+                {
+                    //Console.WriteLine(DateTime.Now.ToShortTimeString() + ": On marble # " + marble);
+                    Log.InfoFormat($"On marble # {marble}");
+                }
             } while (!gameover);
 
             partOneAnswer = scores.Max(); 
@@ -103,13 +111,19 @@ namespace AdventOfCode9
             int partTwoAnswer = 0;
 
             // Results
-            Console.WriteLine("******************");
-            Console.WriteLine("AdventOfCode Day 9");
-            Console.WriteLine("Part I: " + partOneAnswer);
-            Console.WriteLine("Part II: " + partTwoAnswer);
-            Console.WriteLine("******************");
-            Console.WriteLine("Press any key to end...");
-            Console.ReadLine();
+            Log.InfoFormat($"******************");
+            Log.InfoFormat($"AdventOfCode Day 9");
+            Log.InfoFormat($"Part I: " + partOneAnswer);
+            Log.InfoFormat($"Part II: " + partTwoAnswer);
+            Log.InfoFormat($"******************");
+            Log.InfoFormat($"Game ends");
+            //Console.WriteLine("******************");
+            //Console.WriteLine("AdventOfCode Day 9");
+            //Console.WriteLine("Part I: " + partOneAnswer);
+            //Console.WriteLine("Part II: " + partTwoAnswer);
+            //Console.WriteLine("******************");
+            //Console.WriteLine("Press any key to end...");
+            //Console.ReadLine();
 
         }
 
