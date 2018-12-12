@@ -10,6 +10,8 @@ namespace AdventOfCode9
 {
     class Program
     {
+
+
         static void Main(string[] args)
         {
             // Part I
@@ -90,6 +92,9 @@ namespace AdventOfCode9
 
                 if (marble == maxMarble + 1)
                     gameover = true;
+
+                if (marble % 10000 == 0)
+                    Console.WriteLine(DateTime.Now.ToShortTimeString() + ": On marble # " + marble);
             } while (!gameover);
 
             partOneAnswer = scores.Max(); 
