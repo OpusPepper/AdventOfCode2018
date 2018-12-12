@@ -169,16 +169,26 @@ namespace AdventOfCode9
         {
             var locationOfCurrentMarble = marbleOrder.IndexOf((currentMarble));
 
-            for (int i = 7; i > 0; i--)
+            if ((locationOfCurrentMarble - 7) < 0)
             {
-                if (locationOfCurrentMarble == 0)
-                {
-                    locationOfCurrentMarble = marbleOrder.Count - 1;
-                }
-                else
-                    locationOfCurrentMarble--;
+                var x = 7 - locationOfCurrentMarble;
+                locationOfCurrentMarble = marbleOrder.Count - 1 - x;
             }
-            
+            else
+            {
+                locationOfCurrentMarble -= 7;
+            }
+
+            //for (int i = 7; i > 0; i--)
+            //{
+            //    if (locationOfCurrentMarble == 0)
+            //    {
+            //        locationOfCurrentMarble = marbleOrder.Count - 1;
+            //    }
+            //    else
+            //        locationOfCurrentMarble--;
+            //}
+
             return locationOfCurrentMarble;
         }
     }
