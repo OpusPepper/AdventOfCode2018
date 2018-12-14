@@ -8,9 +8,10 @@ namespace AdventOfCode10.Models
 {
     public class LightNode
     {
-        public Tuple<int, int> TuplePosition { get; set; }
-        public Tuple<int, int>  TupleVelocity { get; set; }
+        public (int x, int y) TuplePosition;
+        public (int x, int y) TupleVelocity;
 
+        public int PointsTouching { get; set; }
 
     }
 }
