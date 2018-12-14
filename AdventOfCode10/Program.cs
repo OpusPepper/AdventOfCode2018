@@ -44,14 +44,12 @@ namespace AdventOfCode10
             Log.InfoFormat($"Total lightNodes: " + lightNodes.Count);
 
             Log.InfoFormat($"** Part I End **");
-            // Part II
-            int partTwoAnswer = 0;
+            
 
             // Results
             Log.InfoFormat($"******************");
             Log.InfoFormat($"AdventOfCode Day 9");
             Log.InfoFormat($"Part I: " + partOneAnswer);
-            Log.InfoFormat($"Part II: " + partTwoAnswer);
             Log.InfoFormat($"******************");
             Log.InfoFormat($"Game ends");
 
