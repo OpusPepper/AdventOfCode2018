@@ -23,11 +23,11 @@ namespace AdventOfCode9
             string[] allLines = File.ReadAllLines(path);
             long partOneAnswer = 0;
             string delimited = @"(\d+)";
-            List<long> marbleOrder = new List<long>();
-            long numOfPlayers = 0;
-            long maxMarble = 0;
-            long marble = 0;
-            long currentMarble = 0;
+            List<int> marbleOrder = new List<int>();
+            int numOfPlayers = 0;
+            int maxMarble = 0;
+            int marble = 0;
+            int currentMarble = 0;
             int playerNumber = 1;
 
             // Find beginning and end nodes
@@ -41,7 +41,7 @@ namespace AdventOfCode9
             }
 
             List<long> scores = new List<long>();
-            for (long i = 0; i < numOfPlayers; i++)
+            for (int i = 0; i < numOfPlayers; i++)
             {
                 scores.Add(0);
             }
@@ -68,7 +68,7 @@ namespace AdventOfCode9
                     {
                         // special logic for "23"
                         // player x keeps the marble
-                        long marbleToRemove = GetMarble7MarblesBack(marbleOrder, currentMarble);
+                        int marbleToRemove = GetMarble7MarblesBack(marbleOrder, currentMarble);
                         scores[playerNumber - 1] += marbleOrder[marbleToRemove] + marble;
                         // add this marble to players score
                         marbleOrder.RemoveAt(marbleToRemove);
@@ -117,7 +117,7 @@ namespace AdventOfCode9
 
         }
 
-        private static string GetMarbleOrderString(IList<long> marbleOrder, long currentMarble)
+        private static string GetMarbleOrderString(IList<int> marbleOrder, int currentMarble)
         {
             StringBuilder sb = new StringBuilder();
 
@@ -136,11 +136,11 @@ namespace AdventOfCode9
             return sb.ToString();
         }
 
-        private static long GetInsertLocation(IList<long> marbleOrder, long currentMarble)
+        private static int GetInsertLocation(IList<int> marbleOrder, int currentMarble)
         {
             var locationOfCurrentMarble = marbleOrder.IndexOf(currentMarble);
            
-            for (long i = 0; i < 2; i++)
+            for (int i = 0; i < 2; i++)
             {
                 if (locationOfCurrentMarble == marbleOrder.Count - 1)
                 {
@@ -155,11 +155,11 @@ namespace AdventOfCode9
             return locationOfCurrentMarble;
         }
 
-        private static long GetMarble7MarblesBack(IList<long> marbleOrder, long currentMarble)
+        private static int GetMarble7MarblesBack(IList<int> marbleOrder, int currentMarble)
         {
             var locationOfCurrentMarble = marbleOrder.IndexOf((currentMarble));
 
-            for (long i = 7; i > 0; i--)
+            for (int i = 7; i > 0; i--)
             {
                 if (locationOfCurrentMarble == 0)
                 {
