@@ -43,7 +43,7 @@ namespace AdventOfCode10
 
             var seconds = 0;
             var numberOfPointsTouching = 0;
-            var multiplicationFactor = 1;
+
             do
             {
                 // Start moving the points
