@@ -56,11 +56,14 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="Misc\AdventOfCode10_20181215_155551.log" />
+    <None Include="Misc\AdventOfCode2018Day10Points.xlsx" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>
     <Content Include="Data\input.txt" />
+    <Content Include="Misc\AdventOfCodeDay10Text.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

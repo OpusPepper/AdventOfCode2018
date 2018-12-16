@@ -42,7 +42,8 @@ namespace AdventOfCode10
             }
 
             var seconds = 0;
-
+            var numberOfPointsTouching = 0;
+            var multiplicationFactor = 1;
             do
             {
                 // Start moving the points
@@ -72,9 +73,28 @@ namespace AdventOfCode10
                             z.TuplePosition.x == point.TuplePosition.x &&
                             z.TuplePosition.y == point.TuplePosition.y - 1)
                         .Count();
+                    //check diaganols too
+                    point.PointsTouching += lightNodes.Where(z =>
+        z.TuplePosition.x == point.TuplePosition.x + 1 &&
+        z.TuplePosition.y == point.TuplePosition.y + 1)
+    .Count();
+                    point.PointsTouching += lightNodes.Where(z =>
+                            z.TuplePosition.x == point.TuplePosition.x + 1 &&
+                            z.TuplePosition.y == point.TuplePosition.y -1)
+                        .Count();
+                    point.PointsTouching += lightNodes.Where(z =>
+                            z.TuplePosition.x == point.TuplePosition.x -1 &&
+                            z.TuplePosition.y == point.TuplePosition.y + 1)
+                        .Count();
+                    point.PointsTouching += lightNodes.Where(z =>
+                            z.TuplePosition.x == point.TuplePosition.x -1  &&
+                            z.TuplePosition.y == point.TuplePosition.y - 1)
+                        .Count();
                 }
 
-                var numberOfPointsTouching = lightNodes.Count(z => z.PointsTouching > 0);
+                var pointsTouching = lightNodes.Where(z => z.PointsTouching > 0);
+
+                numberOfPointsTouching = lightNodes.Count(z => z.PointsTouching > 0);
                 var minX = lightNodes.Min(z => z.TuplePosition.x);
                 var maxX = lightNodes.Max(z => z.TuplePosition.x);
                 var minY = lightNodes.Min(z => z.TuplePosition.y);
@@ -82,10 +102,10 @@ namespace AdventOfCode10
                 var pointInTime = new PointInTime(seconds, numberOfPointsTouching, minX, minY, maxX, maxY);
                 pointsInTime.Add(pointInTime);
 
-                
-                Log.InfoFormat($"Number of points touching:  " + numberOfPointsTouching);
-                seconds++;
-            } while (seconds < 10);
+                if (numberOfPointsTouching > 18)
+                    Log.InfoFormat($"Second:  " + seconds.ToString() + ", Number of points touching:  " + numberOfPointsTouching);
+                    seconds++;
+            } while (numberOfPointsTouching != lightNodes.Count);
 
             var highestSecond = pointsInTime.Max(z => z.HighestTouching);
             var highestPointInTime = pointsInTime.Where(z => z.HighestTouching == highestSecond);
@@ -99,23 +119,35 @@ namespace AdventOfCode10
                 Log.InfoFormat($"MaxY: " + highestPointInTime.First().MaxY);
             }
 
-            StringBuilder sb = new StringBuilder();
-            for (int x = highestPointInTime.First().MinX; x <= highestPointInTime.First().MaxX; x++)
+            //StringBuilder sb = new StringBuilder();
+            //for (int x = highestPointInTime.First().MinX; x <= highestPointInTime.First().MaxX; x++)
+            //{
+            //    sb = new StringBuilder();
+            //    for (int y = highestPointInTime.First().MinY; y <= highestPointInTime.First().MaxY; y++)
+            //    {
+            //        if (lightNodes.Any(z => z.TuplePosition.x == x && z.TuplePosition.y == y))
+            //        {
+            //            sb.Append("#");
+            //        }
+            //        else
+            //        {
+            //            sb.Append(".");
+            //        }
+            //    }
+            //    sb.AppendLine();
+            //    Log.InfoFormat(sb.ToString());
+            //}
+
+            using (System.IO.StreamWriter file =
+    new System.IO.StreamWriter(@"C:\Temp\AdventOfCodeDay10Text.txt"))
             {
-                for (int y = highestPointInTime.First().MinY; y <= highestPointInTime.First().MaxY; y++)
+                foreach (var node in lightNodes)
                 {
-                    if (lightNodes.Any(z => z.TuplePosition.x == x && z.TuplePosition.y == y))
-                    {
-                        sb.Append("#");
-                    }
-                    else
-                    {
-                        sb.Append(".");
-                    }
+                    file.WriteLine(node.TuplePosition.x + ";" + node.TuplePosition.y);
                 }
-                sb.AppendLine();
             }
 
+            partOneAnswer = seconds;
             Log.InfoFormat($"Total lightNodes: " + lightNodes.Count);
 
             Log.InfoFormat($"** Part I End **");
@@ -124,7 +156,7 @@ namespace AdventOfCode10
             // Results
             Log.InfoFormat($"******************");
             Log.InfoFormat($"AdventOfCode Day 10");
-            Log.InfoFormat($"Part I: " + partOneAnswer);
+            Log.InfoFormat($"Part I (second of solution): " + partOneAnswer);
             Log.InfoFormat($"******************");
             Log.InfoFormat($"Game ends");
 
