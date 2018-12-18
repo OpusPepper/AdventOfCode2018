@@ -77,14 +77,12 @@ namespace AdventOfCode12
             long sumOfPots = plants.Where(x => x.PotContents == '#').Sum(x => x.Location);
             Log.InfoFormat($"Total Pots: " + sumOfPots);
             Log.InfoFormat($"*** PART I Ends ***");
-            Log.InfoFormat($"*** PART II Begins ***");
-            Log.InfoFormat($"*** PART II Ends ***");
+
 
             // Results
             Log.InfoFormat($"******************");
             Log.InfoFormat($"AdventOfCode Day 12");
-            Log.InfoFormat($"Part I: Energy: " + partOneAnswer);
-            Log.InfoFormat($"Part II: Energy: ");
+            Log.InfoFormat($"Part I: Total Pots: " + sumOfPots);            
             Log.InfoFormat($"******************");
 
             Console.WriteLine("Press any key to end...");
