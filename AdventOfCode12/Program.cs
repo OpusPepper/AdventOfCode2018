@@ -25,8 +25,10 @@ namespace AdventOfCode12
             string[] allLines = File.ReadAllLines(path);
             int partOneAnswer = 0;
             List<Rule> rules = new List<Rule>();
-            int numberOfGenerations = 20;
-            int currentGeneration = 0;
+            long numberOfGenerations = 50000000000;
+            //long numberOfGenerations = 20;
+            //long numberOfGenerations = 2000;
+            long currentGeneration = 0;
             string currentGenerationString = "";
             string nextGenerationString = "";
             List<Plant> plants = new List<Plant>();
@@ -58,22 +60,21 @@ namespace AdventOfCode12
                 }
             }
 
-            // Go through the generations
-            //int sumOfPots = currentGenerationString.Count(x => x == '#');  // for row zero
-            int sumOfPots = plants.Count(x => x.PotContents == '#');
+            Log.InfoFormat($"Potential Plants read in: " + plants.Count);
+            Log.InfoFormat($"Rules read in: " + rules.Count);
 
-            //DisplayRow(currentGeneration, currentGenerationString);
-            DisplayRow(currentGeneration, plants);
-            for (var g = 1; g <= numberOfGenerations; g++)
+            // Go through the generations            
+            DisplayRowShort(currentGeneration, plants);
+            for (long g = 1; g <= numberOfGenerations; g++)
             {
-                ApplyRules(plants, rules);
-                //nextGenerationString = ApplyRulesOnString(currentGenerationString, rules);
-                //currentGenerationString = nextGenerationString;
-                currentGeneration = g;
-                DisplayRow(currentGeneration, currentGenerationString);
-                //sumOfPots += currentGenerationString.Count(x => x == '#');
-                sumOfPots += plants.Count(x => x.PotContents == '#');
+                ApplyRules(plants, rules);                
+                currentGeneration = g;                
+
+                if (g % 1000 == 0)
+                    DisplayRowShort(currentGeneration, plants);
+
             }
+            long sumOfPots = plants.Where(x => x.PotContents == '#').Sum(x => x.Location);
             Log.InfoFormat($"Total Pots: " + sumOfPots);
             Log.InfoFormat($"*** PART I Ends ***");
             Log.InfoFormat($"*** PART II Begins ***");
@@ -90,11 +91,11 @@ namespace AdventOfCode12
             Console.ReadLine();
         }
 
-        public static void DisplayRow(int displayRow, string currentGenerationString)
+        public static void DisplayRow(long displayRow, string currentGenerationString)
         {
             Log.InfoFormat(displayRow + ": " + currentGenerationString);
         }
-        public static void DisplayRow(int displayRow, List<Plant> plants)
+        public static void DisplayRow(long displayRow, List<Plant> plants)
         {
             StringBuilder sb = new StringBuilder();
 
@@ -104,72 +105,17 @@ namespace AdventOfCode12
             {
                 sb.Append(p.PotContents);
             }
-            Log.InfoFormat(displayRow + ": " + sb.ToString());
+            Log.InfoFormat(sb.ToString());
         }
 
-        //        public static void ApplyRules(List<Plant> plants, List<Rule> rules)
-        //        {
-        //            var beginPosition = 0;
-        //            var maxPosition = plants.Max(x => x.Location);
-        //            for (int i = beginPosition; i <= maxPosition; i++  )
-        //            {
-        //                var currentPot = plants.FirstOrDefault(x => x.Location == i).PotContents;
+        public static void DisplayRowShort(long displayRow, List<Plant> plants)
+        {
+            StringBuilder sb = new StringBuilder();
+            long sumOfPots = plants.Where(x => x.PotContents == '#').Sum(x => x.Location);
+            sb.Append(displayRow.ToString() + ": Sum of pots: " + sumOfPots);
 
-        //                    string previousTwoPots;
-        //                    string postTwoPots;
-        //                    //if (i == beginPosition)
-        //                    //{
-        //                    //    previousTwoPots = "..";
-        //                    //    postTwoPots = String.Concat(plants.FirstOrDefault(x => x.Location == (i +1)).PotContents, plants.FirstOrDefault(x => x.Location == (i + 2)).PotContents);
-        //                    //}
-        //                    //else if (i == beginPosition + 1)
-        //                    //{
-        //                    //    previousTwoPots = String.Concat(".", plants.FirstOrDefault(x => x.Location == i).PotContents);
-        //                    //    postTwoPots = String.Concat(plants.FirstOrDefault(x => x.Location == (i + 1)).PotContents, plants.FirstOrDefault(x => x.Location == (i + 2)).PotContents);
-        //                    //}
-        //                    //else 
-        //if (i == maxPosition - 1)
-        //                    {
-        //                        previousTwoPots = String.Concat(plants.FirstOrDefault(x => x.Location == (i - 2)).PotContents, plants.FirstOrDefault(x => x.Location == (i - 1)).PotContents);
-        //                        postTwoPots = String.Concat(plants.FirstOrDefault(x => x.Location == i).PotContents, "."); 
-        //                    }
-        //                    else if (i == maxPosition)
-        //                    {
-        //                        previousTwoPots = String.Concat(plants.FirstOrDefault(x => x.Location == (i - 2)).PotContents, plants.FirstOrDefault(x => x.Location == (i - 1)).PotContents);
-        //                        postTwoPots = "..";
-        //                    }
-        //                    else
-        //                    {
-        //                        previousTwoPots = String.Concat(plants.FirstOrDefault(x => x.Location == (i - 2)).PotContents, plants.FirstOrDefault(x => x.Location == (i - 1)).PotContents);
-        //                        postTwoPots = String.Concat(plants.FirstOrDefault(x => x.Location == (i + 1)).PotContents, plants.FirstOrDefault(x => x.Location == (i + 2)).PotContents);
-        //                    }
-
-        //                var rulePatternToFind = String.Concat(previousTwoPots, currentPot, postTwoPots);
-
-        //                var rulesfound = rules.Where(x => x.RulePatten.Substring(0, 5) == rulePatternToFind);
-
-        //                if (rulesfound.Count() == 1)
-        //                {
-        //                    Log.InfoFormat($"******************");
-        //                    Log.InfoFormat($" String position we are looking at:  " + i);
-        //                    Log.InfoFormat($" String in input: " + rulePatternToFind);
-        //                    Log.InfoFormat($" Rule found: " + rulesfound.First().RulePatten);
-        //                    Log.InfoFormat($"******************");
-        //                    plants.FirstOrDefault(x => x.Location == i).PotContents = rulesfound.First().RulePatten.Substring(9, 1)[0];
-        //                }
-        //                else if (rulesfound.Count() > 1)
-        //                {
-        //                    Log.ErrorFormat($"More than 1 rule match found for pattern: " + rulePatternToFind);
-        //                }
-        //                else
-        //                {
-        //                    plants.FirstOrDefault(x => x.Location == i).PotContents = '.';
-        //                }
-
-
-
-        //            }
-        //        }
+            Log.InfoFormat(sb.ToString());
+        }
 
         public static string ApplyRulesOnString(string currentGenerationString, List<Rule> rules)
         {
@@ -182,6 +128,7 @@ namespace AdventOfCode12
             var maxPosition = prevCurrentString.Length - 1;
             char currentPot;
             string tempGeneration = "";
+            
             for (int i = beginPosition; i < maxPosition; i++)
             {
                 currentPot = prevCurrentString[i];
@@ -227,68 +174,90 @@ namespace AdventOfCode12
 
         public static string ApplyRules(List<Plant> plants, List<Rule> rules)
         {
-            string currentGenerationString = plants.Select(x => x.PotContents).ToString();
-            string returnNewGeneration = "";
+            var plantsForString = plants.Select(x => x.PotContents);
+            var currentGenerationString = new String(plantsForString.ToArray());
+            //string returnNewGeneration = "";
 
             //Let's go backwards first to make sure we don't have any changes in the negative pots
             //Calculate -3 previous pots
-            string prevCurrentString = "..." + currentGenerationString;
+            var currentFirstPlant = plants.First().Location;
+            string prevCurrentString = "..." + currentGenerationString + "...";
             var beginPosition = 0;
             var maxPosition = prevCurrentString.Length - 1;
             char currentPot;
-            string tempGeneration = "";
-            for (int i = beginPosition; i < maxPosition; i++)
+            //string tempGeneration = "";
+            StringBuilder tempGenerationSb = new StringBuilder();
+            StringBuilder returnNewGenerationSb = new StringBuilder();
+            for (int i = beginPosition; i <= maxPosition; i++)
             {
                 currentPot = prevCurrentString[i];
 
-                tempGeneration += ReturnNewGeneration(prevCurrentString, rules, i, maxPosition, beginPosition, currentPot);
+                tempGenerationSb.Append(ReturnNewGeneration(prevCurrentString, rules, i, maxPosition, beginPosition, currentPot));
             }
 
-            if (tempGeneration.Substring(0, 3) != "...")
+            if (tempGenerationSb.ToString().Substring(0, 3) != "...")
             {
-                returnNewGeneration += tempGeneration.Substring(0, 3);
-                for (int i = -1; i <= -3; i--)
+                var firstPlant = plants.First();
+                returnNewGenerationSb.Append(tempGenerationSb.ToString().Substring(0, 3));
+                for (int i = -1; i >= -3; i--)
                 {
-                    plants.Insert(0, new Plant(i, tempGeneration.Substring(Math.Abs(i) - 1, 1)[0]));
+                    plants.Insert(0, new Plant(firstPlant.Location + i, tempGenerationSb.ToString().Substring(Math.Abs(i) - 1, 1)[0]));
                 }
             }
-
-            // Now go through the regular "middle" part of the string
-            beginPosition = 0;
-            maxPosition = currentGenerationString.Length - 1;
-            for (int i = beginPosition; i <= maxPosition; i++)
+            else
             {
-                currentPot = currentGenerationString[i];
-
-                returnNewGeneration += ReturnNewGeneration(currentGenerationString, rules, i, maxPosition, beginPosition, currentPot);
+                tempGenerationSb = new StringBuilder(tempGenerationSb.ToString().Substring(3, tempGenerationSb.Length - 3));                
+            }
+            if (tempGenerationSb.ToString().Substring(tempGenerationSb.Length - 3, 3) != "...")
+            {
+                returnNewGenerationSb.Append(tempGenerationSb.ToString().Substring(tempGenerationSb.Length - 3, 3));
+                var lastPlant = plants.Last();
+                var tempInt = 0;
+                for (int i = 1; i <= 3; i++)
+                {
+                    plants.Add(new Plant(lastPlant.Location + i, tempGenerationSb.ToString().Substring(tempGenerationSb.Length - (3 + tempInt), 1)[0]));
+                    tempInt++;
+                }
+            }
+            else
+            {
+                tempGenerationSb = new StringBuilder(tempGenerationSb.ToString().Substring(0, tempGenerationSb.Length - 3));
             }
 
-            //Let's go forwards last to make sure we don't have any changes in the end pots
-            //Calculate -3 previous pots
-            prevCurrentString = currentGenerationString + "...";
-            beginPosition = 0;
-            maxPosition = prevCurrentString.Length - 1;
-            tempGeneration = "";
-            for (int i = beginPosition; i <= maxPosition; i++)
-            {
-                currentPot = prevCurrentString[i];
+            var currentPlant = plants.First().Location;
+            var currentLastPlant = plants.Last().Location;
 
-                tempGeneration += ReturnNewGeneration(prevCurrentString, rules, i, maxPosition, beginPosition, currentPot);
+            if (tempGenerationSb.Length != plants.Count())
+            {
+                Log.InfoFormat($"******************");
+                Log.InfoFormat($"* Error: tempGeneration not equal to plants.count *");
+                Log.InfoFormat($"******************");
             }
 
-            if (tempGeneration.Substring(tempGeneration.Length - 3, 3) != "...")
+            for (int i = 0; i < tempGenerationSb.Length; i++)
             {
-                returnNewGeneration += tempGeneration.Substring(tempGeneration.Length - 3, 3);
+                var plantToUpdate = plants.FirstOrDefault(x => x.Location == currentPlant);
+                if (plantToUpdate != null)
+                {
+                    plantToUpdate.PotContents = tempGenerationSb[i];
+                }
+                else
+                {
+                    Log.InfoFormat($"******************");
+                    Log.InfoFormat($"* Error: too many plants on update *");
+                    Log.InfoFormat($"******************");
+                }
+
+                currentPlant++;
             }
 
-            return returnNewGeneration;
+            return returnNewGenerationSb.ToString();
         }
 
 
         private static string ReturnNewGeneration(string currentGenerationString, List<Rule> rules, int i, int maxPosition,
             int beginPosition, char currentPot)
         {
-            string returnNewGeneration = "";
             string previousTwoPots;
             string postTwoPots;
 
@@ -324,23 +293,17 @@ namespace AdventOfCode12
 
             if (rulesfound.Count() == 1)
             {
-                //Log.InfoFormat($"******************");
-                //Log.InfoFormat($" String position we are looking at:  " + i);
-                //Log.InfoFormat($" String in input: " + rulePatternToFind);
-                //Log.InfoFormat($" Rule found: " + rulesfound.First().RulePatten);
-                //Log.InfoFormat($"******************");
-                returnNewGeneration += rulesfound.First().RulePatten.Substring(9, 1)[0];
+                return rulesfound.First().RulePatten.Substring(9, 1);
             }
             else if (rulesfound.Count() > 1)
             {
                 Log.ErrorFormat($"More than 1 rule match found for pattern: " + rulePatternToFind);
+                return "";
             }
             else
             {
-                returnNewGeneration += '.';
-            }
-
-            return returnNewGeneration;
+                return ".";
+            }            
         }
 
         private static void ReturnNewGeneration(List<Plant> plants, List<Rule> rules, int i, int maxPosition,
@@ -357,7 +320,7 @@ namespace AdventOfCode12
             }
             else if (i == maxPosition)
             {
-                previousTwoPots = String.Concat(plants.Select(x => x.Location == (i - 2)), plants.Select(x => x.Location == (i - 1])));
+                previousTwoPots = String.Concat(plants.Select(x => x.Location == (i - 2)), plants.Select(x => x.Location == (i - 1)));
                 postTwoPots = "..";
             }
             else if (i == beginPosition)
