@@ -26,7 +26,7 @@ namespace AdventOfCode13
             string[] allLines = File.ReadAllLines(path);
             int partOneAnswer = 0;
             int rowCount = 6;
-            int columnCount = 13;
+            int columnCount = 14;
             char[,] grid = new char[rowCount, columnCount];
 
             Rail myTrack = new Rail(grid, rowCount, columnCount);
@@ -42,14 +42,21 @@ namespace AdventOfCode13
                 //var matches = Regex.Matches(line, delimited);
 
                 //gridSerialNumber = Convert.ToInt32(matches[0].Value);
-
+                Log.InfoFormat($"Line length: " + line.Length);
+                c = 0;
                 foreach (var ch in line.ToCharArray())
                 {
-                    myTrack.Track[r, c] = ch;
-                    c++;
+                    if (c < columnCount)
+                    {
+                        myTrack.Track[r, c] = ch;
+                        c++;
+                    }
                 }
 
-                r++;
+                if (r < rowCount)
+                {
+                    r++;
+                }
             }
 
             DisplayTrack(myTrack);
@@ -73,6 +80,7 @@ namespace AdventOfCode13
         {
             Log.InfoFormat($"******************");
             StringBuilder sb = new StringBuilder();
+            sb.AppendLine();
             for (int r = 0; r < myTrack.NumRows; r++)
             {
                 for (int c = 0; c < myTrack.NumColumns; c++)
