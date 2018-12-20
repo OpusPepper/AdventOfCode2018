@@ -23,11 +23,14 @@ namespace AdventOfCode13
             Log.InfoFormat($"** Part I Begin **");
             string path = Path.Combine(@"..\..\Data\input.txt");
             string[] allLines = File.ReadAllLines(path);
-            int partOneAnswer = 0;
-            int rowCount = 151;
-            int columnCount = 151;
+            string partOneAnswer = "";
+            string partTwoAnswer = "";
+            int rowCount = 151;  // 151
+            int columnCount = 151; // 151
             char[,] grid = new char[rowCount, columnCount];
             char[] possibleEngines = new char[4] {'<', '>', '^', 'v'};
+            int crashesCount = 0;
+            int keepRunningCounter = 2;
 
             Rail myTrack = new Rail(grid, rowCount, columnCount);
             Engine tempEngine;
@@ -82,6 +85,8 @@ namespace AdventOfCode13
             }
 
             //DisplayTrack(myTrack, engines);
+            //Console.WriteLine("Press any key to end...");
+            //Console.ReadLine();
 
             // let's iterate the trains
             List<Engine> crashes = new List<Engine>();
@@ -95,11 +100,31 @@ namespace AdventOfCode13
                     {
                         case '>':
                             whatsInGridNextLocation = grid[eng.CurrentRow, eng.CurrentColumn + 1];
-                            if (engines.Any(x => x.CurrentRow == eng.CurrentRow && x.CurrentColumn == eng.CurrentColumn + 1))
+                            if (engines.Any(x =>
+                                x.CurrentRow == eng.CurrentRow && x.CurrentColumn == eng.CurrentColumn + 1 &&
+                                !x.Crashed))
                             {
                                 eng.CurrentColumn++;
                                 eng.Crashed = true;
                                 eng.EnginePic = 'X';
+
+                                // also find engine it collided with and mark it as crashed
+                                var otherCrashedEngine = engines.Where(x =>
+                                    x.CurrentRow == eng.CurrentRow && x.CurrentColumn == eng.CurrentColumn);
+                                if (otherCrashedEngine != null)
+                                {
+                                    foreach (var oe in otherCrashedEngine)
+                                    {
+                                        oe.Crashed = true;
+                                        oe.EnginePic = 'X';
+                                    }
+                                }
+                                else
+                                {
+                                    Log.InfoFormat($"Error: Unknown crashed engine: " + eng.EnginePic + ", " +
+                                                   eng.CurrentRow + ", " + eng.CurrentColumn);
+                                }
+
                             }
                             else if (whatsInGridNextLocation == '-')
                             {
@@ -141,14 +166,34 @@ namespace AdventOfCode13
                                 else
                                     eng.NextDirection++;
                             }
+
                             break;
                         case '<':
                             whatsInGridNextLocation = grid[eng.CurrentRow, eng.CurrentColumn - 1];
-                            if (engines.Any(x => x.CurrentRow == eng.CurrentRow && x.CurrentColumn == eng.CurrentColumn - 1))
+                            if (engines.Any(x =>
+                                x.CurrentRow == eng.CurrentRow && x.CurrentColumn == eng.CurrentColumn - 1 &&
+                                !x.Crashed))
                             {
                                 eng.CurrentColumn--;
                                 eng.Crashed = true;
                                 eng.EnginePic = 'X';
+
+                                // also find engine it collided with and mark it as crashed
+                                var otherCrashedEngine = engines.Where(x =>
+                                    x.CurrentRow == eng.CurrentRow && x.CurrentColumn == eng.CurrentColumn);
+                                if (otherCrashedEngine != null)
+                                {
+                                    foreach (var oe in otherCrashedEngine)
+                                    {
+                                        oe.Crashed = true;
+                                        oe.EnginePic = 'X';
+                                    }
+                                }
+                                else
+                                {
+                                    Log.InfoFormat($"Error: Unknown crashed engine: " + eng.EnginePic + ", " +
+                                                   eng.CurrentRow + ", " + eng.CurrentColumn);
+                                }
                             }
                             else if (whatsInGridNextLocation == '-')
                             {
@@ -190,14 +235,34 @@ namespace AdventOfCode13
                                 else
                                     eng.NextDirection++;
                             }
+
                             break;
                         case '^':
                             whatsInGridNextLocation = grid[eng.CurrentRow - 1, eng.CurrentColumn];
-                            if (engines.Any(x => x.CurrentRow == eng.CurrentRow - 1 && x.CurrentColumn == eng.CurrentColumn))
+                            if (engines.Any(x =>
+                                x.CurrentRow == eng.CurrentRow - 1 && x.CurrentColumn == eng.CurrentColumn &&
+                                !x.Crashed))
                             {
                                 eng.CurrentRow--;
                                 eng.Crashed = true;
                                 eng.EnginePic = 'X';
+
+                                // also find engine it collided with and mark it as crashed
+                                var otherCrashedEngine = engines.Where(x =>
+                                    x.CurrentRow == eng.CurrentRow && x.CurrentColumn == eng.CurrentColumn);
+                                if (otherCrashedEngine != null)
+                                {
+                                    foreach (var oe in otherCrashedEngine)
+                                    {
+                                        oe.Crashed = true;
+                                        oe.EnginePic = 'X';
+                                    }
+                                }
+                                else
+                                {
+                                    Log.InfoFormat($"Error: Unknown crashed engine: " + eng.EnginePic + ", " +
+                                                   eng.CurrentRow + ", " + eng.CurrentColumn);
+                                }
                             }
                             else if (whatsInGridNextLocation == '|')
                             {
@@ -239,14 +304,34 @@ namespace AdventOfCode13
                                 else
                                     eng.NextDirection++;
                             }
+
                             break;
                         case 'v':
                             whatsInGridNextLocation = grid[eng.CurrentRow + 1, eng.CurrentColumn];
-                            if (engines.Any(x => x.CurrentRow == eng.CurrentRow + 1 && x.CurrentColumn == eng.CurrentColumn))
+                            if (engines.Any(x =>
+                                x.CurrentRow == eng.CurrentRow + 1 && x.CurrentColumn == eng.CurrentColumn &&
+                                !x.Crashed))
                             {
                                 eng.CurrentRow++;
                                 eng.Crashed = true;
                                 eng.EnginePic = 'X';
+
+                                // also find engine it collided with and mark it as crashed
+                                var otherCrashedEngine = engines.Where(x =>
+                                    x.CurrentRow == eng.CurrentRow && x.CurrentColumn == eng.CurrentColumn);
+                                if (otherCrashedEngine != null)
+                                {
+                                    foreach (var oe in otherCrashedEngine)
+                                    {
+                                        oe.Crashed = true;
+                                        oe.EnginePic = 'X';
+                                    }
+                                }
+                                else
+                                {
+                                    Log.InfoFormat($"Error: Unknown crashed engine: " + eng.EnginePic + ", " +
+                                                   eng.CurrentRow + ", " + eng.CurrentColumn);
+                                }
                             }
                             else if (whatsInGridNextLocation == '|')
                             {
@@ -288,36 +373,64 @@ namespace AdventOfCode13
                                 else
                                     eng.NextDirection++;
                             }
+
                             break;
                     }
                 }
 
-                // Colision detector
-                //foreach (var e in engines)
-                //{
-                //    //var sharesSameSpace = engines.Where(x =>
-                //    //    x.CurrentRow == e.CurrentRow && x.CurrentColumn == e.CurrentColumn).ToList();
-                //    var sharesSameSpace = engines.Where(x => x.EnginePic == 'X').OrderBy(x => x.CurrentRow).ThenBy(x => x.CurrentColumn);
-                //    if (sharesSameSpace.Count() > 0)
-                //    {
-                //        e.EnginePic = 'X';
-                //        e.Crashed = true;
-                //        foreach (var e2 in sharesSameSpace)
-                //        {
-                //            e2.EnginePic = 'X';
-                //            e2.Crashed = true;
-                //        }
-                //    }
-                //}
                 crashes = engines.Where(x => x.Crashed).ToList();
-                if (crashes.Any())
-                    Log.InfoFormat($"Crash detected: " + crashes[0].CurrentColumn + ", " + crashes[0].CurrentRow);
+                if (crashes.Count != crashesCount)
+                {
+                    Log.InfoFormat($"Crash detected.  Total crashes: " + crashes.Count());
+                }
 
+                if (crashes.Any())
+                {
+                    if (partOneAnswer.Length == 0)
+                    {
+                        Log.InfoFormat($"First Crash detected: " + crashes[0].CurrentColumn + ", " +
+                                       crashes[0].CurrentRow);
+                        // found first crash
+                        partOneAnswer = crashes[0].CurrentColumn + ", " + crashes[0].CurrentRow;
+                    }
+
+
+                        var cartLeft = engines.Where(x => !x.Crashed).ToList();
+                        if (cartLeft.Count() == 1)
+                        {
+                            Log.InfoFormat($"All crashes cleared, one last cart left: " +
+                                           cartLeft[0].CurrentColumn +
+                                           ", " + cartLeft[0].CurrentRow);
+                            partTwoAnswer = cartLeft[0].CurrentColumn + ", " + cartLeft[0].CurrentRow;
+                            keepRunningCounter = 0;
+                            //if (keepRunningCounter == 2)
+                            //    {
+                            //        Log.InfoFormat($"All crashes cleared, one last cart left: " +
+                            //                       cartLeft[0].CurrentColumn +
+                            //                       ", " + cartLeft[0].CurrentRow);
+                            //        Log.InfoFormat($"Running one last tick for the final cart");
+                            //        keepRunningCounter--;
+
+                            //    }
+                            //    else if (keepRunningCounter == 1)
+                            //    {
+                            //        Log.InfoFormat($"All crashes cleared, one last cart left: " +
+                            //                       cartLeft[0].CurrentColumn +
+                            //                       ", " + cartLeft[0].CurrentRow);
+                            //        Log.InfoFormat($"Last tick for the final cart is now complete");
+                            //        partTwoAnswer = cartLeft[0].CurrentColumn + ", " + cartLeft[0].CurrentRow;
+                            //        keepRunningCounter--;
+                            //    }
+                        }
+                }
 
                 //DisplayTrack(myTrack, engines);
+                //Console.WriteLine("Press any key to end...");
+                //Console.ReadLine();
                 Log.InfoFormat($"Iteration: " + iteration);
                 iteration++;
-            } while (!crashes.Any());
+            } while (keepRunningCounter != 0);
+            //} while (!crashes.Any());
             //} while (iteration < 1000);
 
             DisplayTrack(myTrack, engines);
@@ -325,7 +438,8 @@ namespace AdventOfCode13
             // Results
             Log.InfoFormat($"******************");
             Log.InfoFormat($"AdventOfCode Day 13");
-            Log.InfoFormat($"Part I: " + crashes[0].CurrentColumn + ", " + crashes[0].CurrentRow);
+            Log.InfoFormat($"Part I: " + partOneAnswer);
+            Log.InfoFormat($"Part II: " + partTwoAnswer);
             Log.InfoFormat($"******************");
 
             Console.WriteLine("Press any key to end...");
