@@ -21,8 +21,13 @@ namespace AdventOfCode14
             XmlConfigurator.Configure();
 
             // Part I
-            int numberOfRecipes = 260321;            
-            string partOneAnswer = "";            
+            int numberOfRecipes = 1000000;
+            string findMe = "260321";
+            int partTwoAnswer = 0;
+            string partOneAnswer = "";
+            bool stringFound = false;
+            StringBuilder sb = new StringBuilder();
+            int z = 0;
             List<Recipe> recipes = new List<Recipe>()
             {
                 new Recipe(3, 0),
@@ -33,7 +38,7 @@ namespace AdventOfCode14
                 new Elf(0, '(', ')', 0),
                 new Elf(1, '[', ']', 1)
             };
-
+            sb.Append("37");
             do
             {
                 var recipesCurrentlyBeingWorkedOn = recipes.Where(x => x.IdOfElfCurrentlyWorking >= 0).ToList();
@@ -47,6 +52,8 @@ namespace AdventOfCode14
                     {
                         tempRecipe = new Recipe((int) Char.GetNumericValue(c), -1);
                         recipes.Add(tempRecipe);
+                        if (!stringFound)
+                            sb.Append(tempRecipe.RecipeScore);
                     }
 
                     // now let's assign where the elves are going to
@@ -62,7 +69,6 @@ namespace AdventOfCode14
                             elf.CurrentRecipeIndex = elf.CurrentRecipeIndex % recipes.Count();
                         }
 
-
                         recipes[elf.CurrentRecipeIndex].IdOfElfCurrentlyWorking = elf.ElfId;
                     }
 
@@ -75,9 +81,21 @@ namespace AdventOfCode14
                 else
                 {
                     Log.InfoFormat($"**Couldn't find both elves**");
-                }                
+                }
 
-            } while (recipes.Count() < (numberOfRecipes + 11));
+                if (!stringFound)
+                {
+                    if (sb.ToString().Contains(findMe))
+                    {
+                        stringFound = true;
+                        partTwoAnswer = sb.ToString().Replace(findMe, "").Length;
+
+                        Log.InfoFormat($"**Found part II answer: " + partTwoAnswer);
+                    }
+                    
+                }
+
+            } while ((recipes.Count() < (numberOfRecipes + 11)) && (partTwoAnswer == 0));
 
             for (int i = 0; i < recipes.Count(); i++)
             {
@@ -87,11 +105,17 @@ namespace AdventOfCode14
                 }
             }
 
+            // Part II
+            
+
+
+
+
             // Results
             Log.InfoFormat($"******************");
             Log.InfoFormat($"AdventOfCode Day 14");
             Log.InfoFormat($"Part I: " + partOneAnswer);
-            Log.InfoFormat($"Part II: " + "");
+            Log.InfoFormat($"Part II: " + partTwoAnswer);
             Log.InfoFormat($"******************");
 
             Console.WriteLine("Press any key to end...");
